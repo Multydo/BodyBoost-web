@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Http;
 
 class getEX extends Controller
 {
-     public function fetchAndSaveExercises()
+     /*public function fetchAndSaveExercises()
     {
         // Define the API endpoint and headers
         $url = "https://exercisedb.p.rapidapi.com/exercises/target/upper%20back?offset=1&limit=2000";
@@ -45,5 +45,5 @@ class getEX extends Controller
             // Handle any errors
             return response()->json(['status' => 'error', 'message' => $e->getMessage()]);
         }
-    }
+    }*/
 }
