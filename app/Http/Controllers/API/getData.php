@@ -61,22 +61,12 @@ class getData extends Controller
         }
        
     }
-}
 
-
-
-
-
-
-
-
-class getData extends Controller
-{
-    public function getfunction(Request $request){
+    public function getEquipment(Request $request){
         
-        $function = $request["function"];
+        $equipment = $request["function"];
         if($request["lastId"]==-1){
-           $firstId = Exercise::where('function', $function)
+           $firstId = Exercise::where('equipment', $equipment)
                         ->orderBy('id', 'asc')
                         ->select('id')
                         ->first();
@@ -89,17 +79,17 @@ class getData extends Controller
 
         
         $exerciseData = Exercise::where([
-                                ['function', '=', $fuction],
+                                ['equipment', '=', $equipment],
                                 ['id', '>=', $reqId]
                             ])->take(10)
-                            ->select('id', 'name', 'body_part', 'equipment', 'target', 'secondary_muscles', 'instructions')
+                            ->select('id', 'name', 'body_part', '', 'target', 'secondary_muscles', 'instructions')
                             ->get()
                             ->toArray();
         //dd($exerciseData);
         if($exerciseData){
             $moreId = $reqId +11 ;
             $moreExData = Exercise::where([
-                                ['function', '=', $function],
+                                ['equipment', '=', $equipment],
                                 ['id', '>=', $moreId]
                             ])->take(10)
                             ->select('id', 'name', 'body_part', 'equipment', 'target', 'secondary_muscles', 'instructions')
@@ -118,22 +108,21 @@ class getData extends Controller
 
         }else{
             return response()->json([
-                "message"=>"invalid function: $function or id: $reqId",
+                "message"=>"invalid equipment: $equipment or id: $reqId",
                 "state"=>false,
                 "data"=>""
             ],400);
         }
        
     }
-}
 
 
-class getData extends Controller
-{
-    public function getmachine(Request $request){
-        $function = $request["machine"];
+
+
+    public function getTarget(Request $request){
+        $target = $request["target"];
         if($request["lastId"]==-1){
-           $firstId = Exercise::where('machine', $machine)
+           $firstId = Exercise::where('machine', $target)
                         ->orderBy('id', 'asc')
                         ->select('id')
                         ->first();
@@ -146,7 +135,7 @@ class getData extends Controller
 
         
         $exerciseData = Exercise::where([
-                                ['machine', '=', $fuction],
+                                ['target', '=', $target],
                                 ['id', '>=', $reqId]
                             ])->take(10)
                             ->select('id', 'name', 'body_part', 'equipment', 'target', 'secondary_muscles', 'instructions')
@@ -156,7 +145,7 @@ class getData extends Controller
         if($exerciseData){
             $moreId = $reqId +11 ;
             $moreExData = Exercise::where([
-                                ['machine', '=', $machine],
+                                ['machine', '=', $target],
                                 ['id', '>=', $moreId]
                             ])->take(10)
                             ->select('id', 'name', 'body_part', 'equipment', 'target', 'secondary_muscles', 'instructions')
@@ -175,11 +164,12 @@ class getData extends Controller
 
         }else{
             return response()->json([
-                "message"=>"invalid machine: $machine or id: $reqId",
+                "message"=>"invalid machine: $target or id: $reqId",
                 "state"=>false,
                 "data"=>""
             ],400);
         }
        
     }
+    
 }

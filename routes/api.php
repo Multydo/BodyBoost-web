@@ -3,9 +3,12 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\API\getData;
-route::post('functions',[getData::class,'getfunction']);
+use App\Http\Controllers\API\UserController;
+Route::post('/target',[getData::class,'getTarget']);
 
 
-route::post('machines',[getData::class,'getmachine']);
+Route::post('/equipment',[getData::class,'getEquipment']);
 
-route::post('bodyParts',[getData::class,'getBodyPart']);
+Route::post('/bodypart',[getData::class,'getBodyPart']);
+Route::post("/register",[UserController::class,"register"]);
+Route::post("/login",[UserController::class,"login"]);
