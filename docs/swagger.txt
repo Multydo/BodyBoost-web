@@ -1,0 +1,2 @@
+NEW DOCUMENTATION "UI/UX" IS ADDED YOU NEED TO RUN (php arisan serve) THEN VISIT THIS SITE ON 
+YOUR INTERNET BROWSER ( http://localhost:8000/api/documentation )
