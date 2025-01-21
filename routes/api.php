@@ -1,11 +1,10 @@
 <?php
 
-
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\API\getData;
-route::post('functions',[getData::class,'getfunction']);
 
-
-route::post('machines',[getData::class,'getmachine']);
-
-route::post('bodyParts',[getData::class,'getBodyPart']);
+Route::prefix('api')->group(function () {
+    Route::post('functions', [getData::class, 'getFunction']);
+    Route::post('machines', [getData::class, 'getMachine']);
+    Route::post('body-parts', [getData::class, 'getBodyPart']);
+});

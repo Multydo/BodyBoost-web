@@ -8,178 +8,208 @@ use App\Models\Exercise;
 
 class getData extends Controller
 {
-    public function getBodyPart(Request $request){ 
-        
-        $bodyPart = $request["body_part"];
-        if($request["lastId"]==-1){
-           $firstId = Exercise::where('body_part', $bodyPart)
-                        ->orderBy('id', 'asc')
-                        ->select('id')
-                        ->first();
-
-            $reqId = $firstId["id"];
-        }else{
-            $reqId = $request["lastId"]+1 ;
-        }
-
-
-        
-        $exerciseData = Exercise::where([
-                                ['body_part', '=', $bodyPart],
-                                ['id', '>=', $reqId]
-                            ])->take(10)
-                            ->select('id', 'name', 'body_part', 'equipment', 'target', 'secondary_muscles', 'instructions')
-                            ->get()
-                            ->toArray();
-        //dd($exerciseData);
-        if($exerciseData){
-            $moreId = $reqId +11 ;
-            $moreExData = Exercise::where([
-                                ['body_part', '=', $bodyPart],
-                                ['id', '>=', $moreId]
-                            ])->take(10)
-                            ->select('id', 'name', 'body_part', 'equipment', 'target', 'secondary_muscles', 'instructions')
-                            ->get()
-                            ->toArray();
-            $state = true;
-            if(!$moreExData){
-                $state = false;
-            }   
-            //dd($exerciseData);
-            return response()->json([
-                "message" => "exercise data found",
-                "state" => $state,
-                "data" => $exerciseData
-            ],200);
-
-        }else{
-            return response()->json([
-                "message"=>"invalid body_part: $bodyPart or id: $reqId",
-                "state"=>false,
-                "data"=>""
-            ],400);
-        }
-       
-    }
-}
-
-
-
-
-
-
-
-
-class getData extends Controller
+    // hasab l part l jasem li bade yeha
+    public function getBodyPart(Request $request)
 {
-    public function getfunction(Request $request){
-        
-        $function = $request["function"];
-        if($request["lastId"]==-1){
-           $firstId = Exercise::where('function', $function)
-                        ->orderBy('id', 'asc')
-                        ->select('id')
-                        ->first();
+    
+    $bodyPart = $request->input("body_part");
+    $lastId = $request->input("lastId", -1); 
 
-            $reqId = $firstId["id"];
-        }else{
-            $reqId = $request["lastId"]+1 ;
-        }
+    if ($lastId == -1) {
+      
+        $firstRecord = Exercise::where('body_part', $bodyPart)
+            ->orderBy('id', 'asc')
+            ->select('id')
+            ->first();
 
-
-        
-        $exerciseData = Exercise::where([
-                                ['function', '=', $fuction],
-                                ['id', '>=', $reqId]
-                            ])->take(10)
-                            ->select('id', 'name', 'body_part', 'equipment', 'target', 'secondary_muscles', 'instructions')
-                            ->get()
-                            ->toArray();
-        //dd($exerciseData);
-        if($exerciseData){
-            $moreId = $reqId +11 ;
-            $moreExData = Exercise::where([
-                                ['function', '=', $function],
-                                ['id', '>=', $moreId]
-                            ])->take(10)
-                            ->select('id', 'name', 'body_part', 'equipment', 'target', 'secondary_muscles', 'instructions')
-                            ->get()
-                            ->toArray();
-            $state = true;
-            if(!$moreExData){
-                $state = false;
-            }   
-            //dd($exerciseData);
+        if ($firstRecord) {
+            $reqId = $firstRecord->id;
+        } else {
             return response()->json([
-                "message" => "exercise data found",
-                "state" => $state,
-                "data" => $exerciseData
-            ],200);
-
-        }else{
-            return response()->json([
-                "message"=>"invalid function: $function or id: $reqId",
-                "state"=>false,
-                "data"=>""
-            ],400);
+                "message" => "No exercises found for the specified body_part.",
+                "state" => false,
+                "data" => []
+            ], 404);
         }
-       
+    } else {
+        $reqId = $lastId + 1;
+    }
+
+    
+    $exerciseData = Exercise::where([
+        ['body_part', '=', $bodyPart],
+        ['id', '>=', $reqId]
+    ])
+    ->take(10)
+    ->select('id', 'name', 'body_part', 'equipment', 'target', 'secondary_muscles', 'instructions')
+    ->get();
+
+    if ($exerciseData->isNotEmpty()) {
+        $moreId = $reqId + 11;
+
+        // 
+        $hasMoreData = Exercise::where([
+            ['body_part', '=', $bodyPart],
+            ['id', '>=', $moreId]
+        ])->exists();
+
+        return response()->json([
+            "message" => "Exercise data found",
+            "state" => $hasMoreData,
+            "data" => $exerciseData
+        ], 200);
+    } else {
+        return response()->json([
+            "message" => "No exercises found for body_part: $bodyPart or id: $reqId.",
+            "state" => false,
+            "data" => []
+        ], 404);
+        // by3ti esem l exercices li bade ye mn l body part mtl l daher for expl w bi dawer 3a tamarin hasab ltalab
+        // bi haded n2tet l bideye hasab l last id 
+        // eza l last id m ken mab3ut bi balech mn awl l data
+        // eza ken fi data zyede byb3at json eno fi w by3rod be2e ldata
+        // eza m ken fi byb3at eno m3ch fi data 
     }
 }
 
+}
 
-class getData extends Controller
+
+
+
+
+
+
+
 {
-    public function getmachine(Request $request){
-        $function = $request["machine"];
-        if($request["lastId"]==-1){
-           $firstId = Exercise::where('machine', $machine)
-                        ->orderBy('id', 'asc')
-                        ->select('id')
-                        ->first();
+    // hasab no3 l temrin
+    public function getFunction(Request $request)
+{
+   
+    $function = $request->input("function");
+    $lastId = $request->input("lastId", -1); 
 
-            $reqId = $firstId["id"];
-        }else{
-            $reqId = $request["lastId"]+1 ;
-        }
+    
+    if ($lastId == -1) {
+        $firstRecord = Exercise::where('function', $function)
+            ->orderBy('id', 'asc')
+            ->select('id')
+            ->first();
 
-
-        
-        $exerciseData = Exercise::where([
-                                ['machine', '=', $fuction],
-                                ['id', '>=', $reqId]
-                            ])->take(10)
-                            ->select('id', 'name', 'body_part', 'equipment', 'target', 'secondary_muscles', 'instructions')
-                            ->get()
-                            ->toArray();
-        //dd($exerciseData);
-        if($exerciseData){
-            $moreId = $reqId +11 ;
-            $moreExData = Exercise::where([
-                                ['machine', '=', $machine],
-                                ['id', '>=', $moreId]
-                            ])->take(10)
-                            ->select('id', 'name', 'body_part', 'equipment', 'target', 'secondary_muscles', 'instructions')
-                            ->get()
-                            ->toArray();
-            $state = true;
-            if(!$moreExData){
-                $state = false;
-            }   
-            //dd($exerciseData);
+        if ($firstRecord) {
+            $reqId = $firstRecord->id;
+        } else {
             return response()->json([
-                "message" => "exercise data found",
-                "state" => $state,
-                "data" => $exerciseData
-            ],200);
-
-        }else{
-            return response()->json([
-                "message"=>"invalid machine: $machine or id: $reqId",
-                "state"=>false,
-                "data"=>""
-            ],400);
+                "message" => "No exercises found for the specified function.",
+                "state" => false,
+                "data" => []
+            ], 404);
         }
-       
+    } else {
+        $reqId = $lastId + 1;
+    }
+
+    
+    $exerciseData = Exercise::where([
+        ['function', '=', $function],
+        ['id', '>=', $reqId]
+    ])
+    ->take(10)
+    ->select('id', 'name', 'body_part', 'equipment', 'target', 'secondary_muscles', 'instructions')
+    ->get();
+
+    
+    $hasMoreData = Exercise::where([
+        ['function', '=', $function],
+        ['id', '>=', $reqId + 11]
+    ])->exists();
+
+    
+    if ($exerciseData->isNotEmpty()) {
+        return response()->json([
+            "message" => "Exercise data found",
+            "state" => $hasMoreData,
+            "data" => $exerciseData
+        ], 200);
+    } else {
+        return response()->json([
+            "message" => "No exercises found for function: $function or id: $reqId.",
+            "state" => false,
+            "data" => []
+        ], 404);
+        // bye5od wazife m3ayane mn l function mtl l owe masalan  w bi haded mn l last id eza ken mawjud aw la 
+        // eza m ken l last id mab3ut mn abl bi balech bi awl l data 
+        //  by3tina bs 10 tamarin hasab l chi l matlub meno w bi chuf eza fi baed data
+        // eza ken fi data byb3at risele m3 json eno fi w by3rod be2e l exercices 
+        // eza m ken be2e data byb3at error
     }
 }
+
+}
+
+
+{
+    // hasab l makana
+    public function getMachine(Request $request)
+{
+    
+    $machine = $request->input("machine");
+    $lastId = $request->input("lastId", -1); 
+
+    
+    if ($lastId == -1) {
+        $firstRecord = Exercise::where('machine', $machine)
+            ->orderBy('id', 'asc')
+            ->select('id')
+            ->first();
+
+        if ($firstRecord) {
+            $reqId = $firstRecord->id;
+        } else {
+            return response()->json([
+                "message" => "No exercises found for the specified machine.",
+                "state" => false,
+                "data" => []
+            ], 404);
+        }
+    } else {
+        $reqId = $lastId + 1;
+    }
+
+    
+    $exerciseData = Exercise::where([
+        ['machine', '=', $machine],
+        ['id', '>=', $reqId]
+    ])
+    ->take(10)
+    ->select('id', 'name', 'body_part', 'equipment', 'target', 'secondary_muscles', 'instructions')
+    ->get();
+
+    $hasMoreData = Exercise::where([
+        ['machine', '=', $machine],
+        ['id', '>=', $reqId + 11]
+    ])->exists();
+
+
+    if ($exerciseData->isNotEmpty()) {
+        return response()->json([
+            "message" => "Exercise data found",
+            "state" => $hasMoreData,
+            "data" => $exerciseData
+        ], 200);
+    } else {
+        return response()->json([
+            "message" => "No exercises found for machine: $machine or id: $reqId.",
+            "state" => false,
+            "data" => []
+        ], 404);
+        // lcode bi dawer 3a exercicet bi 5anet l machine li bade yeha eza m ken fi id mn abl bi balech bi awal wahad 3emlinlo enregistrer
+        // awl mara by3tine bs 10 tamarin m3 baed w bi chuf eza baed fi data mawjude bi alb machine
+        // l ajwibe btruh 3a json li byb3at ll user true eza fi baed data aw false eza ken 5alsa l data
+        // l data bteje tahet ba3da mtl l array
+    }
+}
+
+        }
+       
+  
